@@ -1,3 +1,4 @@
-source :rubygems
+source "http://rubygems.org"
 
-gem 'foreman'
+# Specify your gem's dependencies in foreman-export-monit.gemspec
+gemspec

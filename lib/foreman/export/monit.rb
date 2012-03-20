@@ -1,7 +1,9 @@
+require 'foreman/export'
+require 'foreman/cli'
+
 module Foreman
   module Export
     class Monit < Foreman::Export::Base
-
       attr_reader :pid, :check
 
       def initialize(location, engine, options={})
