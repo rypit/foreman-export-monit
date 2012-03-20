@@ -2,8 +2,16 @@
 This is an export for [[https://github.com/ddollar/foreman/][foreman]]. It creates monit config and wrappers for the commands so
 monit could start and stop them.
 
+* Getting started
+
+Add the monit gem to your project
+
+  #+BEGIN_SRC: ruby
+  gem "foreman-export-monit"
+  #+END_SRC
+
 * Usage
 
   #+BEGIN_SRC: sh
-  foreman export monit ./ -t `pwd`/foreman/export/templates
+  bundle exec foreman export monit
   #+END_SRC
