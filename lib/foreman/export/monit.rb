@@ -6,54 +6,40 @@ module Foreman
     class Monit < Foreman::Export::Base
       attr_reader :pid, :check
 
-      def self.template_root
-        @template_root ||= File.expand_path('../../data/templates', __FILE__)
-      end
-
       def initialize(location, engine, options={})
-        super
-        @pid = options[:pid]
-        @check = options[:check]
+        options = options.merge('template' => File.expand_path('../../data/templates', __FILE__)) unless options.key?('template')
+        super(location, engine, options)
       end
 
       def export
-        error("Must specify a location") unless location
+        super
 
-        FileUtils.mkdir_p location
-
-        @app ||= File.basename(engine.directory)
-        @user ||= app
-        @log = File.expand_path(@log || "/var/log/#{app}")
-        @pid = File.expand_path(@pid || "/var/run/#{app}")
-        @check = File.expand_path(@check || "/var/lock/subsys/#{app}")
+        @pid = File.expand_path("/var/run/#{app}")
+        @check = File.expand_path("/var/lock/subsys/#{app}")
         @location = File.expand_path(@location)
 
-        engine.procfile.entries.each do |process|
-          wrapper_template = export_template("monit", "wrapper.sh.erb", self.class.template_root)
-          wrapper_config   = ERB.new(wrapper_template, 0, "-").result(binding)
-          write_file wrapper_path_for(process), wrapper_config
-          FileUtils.chmod 0755, wrapper_path_for(process)
+        engine.each_process do |name, process|
+          write_template "monit/wrapper.sh.erb", wrapper_path_for(name), binding
+          FileUtils.chmod 0755, wrapper_path_for(name)
         end
 
-        monitrc_template = export_template("monit", "monitrc.erb", self.class.template_root)
-        monitrc_config   = ERB.new(monitrc_template, 0, "-").result(binding)
-        write_file "#{location}/#{app}.monitrc", monitrc_config
+        write_template "monit/monitrc.erb", "#{location}/#{app}.monitrc", binding
       end
 
-      def wrapper_path_for(process)
-        File.join(location, "#{app}-#{process.name}.sh")
+      def wrapper_path_for(process_name)
+        File.join(location, "#{app}-#{process_name}.sh")
       end
 
-      def pid_file_for(process, num)
-        File.join(pid, "#{process.name}-#{num}.pid")
+      def pid_file_for(process_name, num)
+        File.join(pid, "#{process_name}-#{num}.pid")
       end
 
-      def log_file_for(process, num)
-        File.join(log, "#{process.name}-#{num}.log")
+      def log_file_for(process_name, num)
+        File.join(log, "#{process_name}-#{num}.log")
       end
 
-      def check_file_for(process)
-        File.join(check, "#{process.name}.restart")
+      def check_file_for(process_name)
+        File.join(check, "#{process_name}.restart")
       end
     end
   end
