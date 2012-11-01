@@ -24,6 +24,8 @@ function start() {
       fi
     fi
 
+    source /etc/profile.d/rvm.sh
+    cd <%= engine.root %>
     <%= process.command %> >> $LOG_FILE 2>&1 &
 
     if [ $? -eq 0 ]; then
