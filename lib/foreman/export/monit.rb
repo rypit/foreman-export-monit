@@ -15,7 +15,7 @@ module Foreman
         super
 
         @pid = File.expand_path(ENV['PID_LOCATION'] || "/var/run/#{app}")
-        @check = File.expand_path("/var/lock/subsys/#{app}")
+        @check = File.expand_path(ENV['CHECK_LOCATION'] || "/var/lock/subsys/#{app}")
         @location = File.expand_path(@location)
         options[:log] = File.expand_path(log)
 
