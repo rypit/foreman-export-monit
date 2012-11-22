@@ -1,0 +1,43 @@
+#!/bin/bash
+
+function start() {
+<% engine.each_process do |name, process| -%>
+<% 1.upto(engine.formation[name]) do |num| -%>
+<% port = engine.port_for(process, num) -%>
+    <%= start_command(port, name, num) %>
+<% end -%>
+<% end -%>
+}
+
+function stop() {
+<% engine.each_process do |name, process| -%>
+<% 1.upto(engine.formation[name]) do |num| -%>
+    <%= stop_command(name, num) %>
+<% end -%>
+<% end -%>
+}
+
+function restart() {
+<% engine.each_process do |name, process| -%>
+<% 1.upto(engine.formation[name]) do |num| -%>
+<% port = engine.port_for(process, num) -%>
+    <%= stop_command(name, num) %>
+    <%= start_command(port, name, num) %>
+<% end -%>
+<% end -%>
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        restart
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 0
+esac

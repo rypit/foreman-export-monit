@@ -4,8 +4,8 @@
 check process <%= app %>-<%= name %>-<%= num %> with pidfile <%= pid_file_for(name, num) %>
   depends on <%= File.basename(check_file_for(name)) %>
   group <%= app %>-<%= name %>
-  start program "/bin/sh -c 'PORT=<%= port %> PID_FILE=<%= pid_file_for(name, num) %> LOG_FILE=<%= log_file_for(name, num) %> <%= wrapper_path_for(name) %> start'" as uid <%= user %>
-  stop program "/bin/sh -c 'PID_FILE=<%= pid_file_for(name, num) %> <%= wrapper_path_for(name) %> stop'" as uid <%= user %>
+  start program "<%= start_command(port, name, num) %>" as uid <%= user %>
+  stop program "<%= stop_command(name, num) %>" as uid <%= user %>
 
 <% end -%>
 check file <%= File.basename(check_file_for(name)) %> with path <%= check_file_for(name) %>

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-PID_FILE=${PID_FILE:-/var/run/<%= app %>/<%= name %>.pid}
-LOG_FILE=${LOG_FILE:-<%= log %>/<%= name %>.log}
+PID_FILE=${PID_FILE:-<%= default_pid_file_for(name) %>}
+LOG_FILE=${LOG_FILE:-<%= default_log_file_for(name) %>}
 
 STATUS_RUNNING=0
 STATUS_DEAD_WITH_PID=1
@@ -10,6 +10,10 @@ STATUS_UNKNOWN=4
 function checkpid() {
     [ -z $1 ] && return 1
     [ -d /proc/$1 ] && return 0
+    ps -p $1 2>&1 > /dev/null
+    if [ $? -eq 0 ]; then
+        return 0
+    fi
     return 1
 }
 
@@ -69,8 +73,12 @@ case "$1" in
     stop)
         stop
         ;;
+    restart)
+        stop
+        start
+        ;;
     *)
-        echo "Usage: $0 {start|stop}"
+        echo "Usage: $0 {start|stop|restart}"
         exit 0
 esac
 
