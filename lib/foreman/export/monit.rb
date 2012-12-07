@@ -22,6 +22,9 @@ module Foreman
         engine.each_process do |name, process|
           write_template "monit/wrapper.sh.erb", wrapper_path_for(name), binding
           FileUtils.chmod 0755, wrapper_path_for(name)
+
+          FileUtils.touch check_file_for(name)
+          FileUtils.chown user, nil, check_file_for(name)
         end
         write_template "monit/manager.sh.erb", manager_path, binding
         FileUtils.chmod 0755, manager_path
@@ -56,7 +59,7 @@ module Foreman
       end
 
       def check_file_for(process_name)
-        File.join(check, "#{process_name}.restart")
+        File.join(check, "#{app}.#{process_name}.restart")
       end
 
       def start_command(port, process_name, num)
