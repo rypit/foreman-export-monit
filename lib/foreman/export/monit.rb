@@ -16,7 +16,10 @@ module Foreman
 
         @pid = File.expand_path(ENV['PID_LOCATION'] || "/var/run/#{app}")
         @check = File.expand_path(ENV['CHECK_LOCATION'] || "/var/lock/subsys/#{app}")
+        @shell = ENV['SHELL'] || "/bin/sh"
+        @env_options = ENV['OPTIONS']
         @location = File.expand_path(@location)
+        options[:environment] = expanded_options
         options[:log] = File.expand_path(log)
 
         engine.each_process do |name, process|
@@ -62,12 +65,16 @@ module Foreman
         File.join(check, "#{app}.#{process_name}.restart")
       end
 
+      def expanded_options
+        @env_options.split(",").map{|option| option.split(":")[0].strip.upcase + "=" + option.split(":").map(&:strip)[1..-1].join(":") }.join(" ")
+      end
+
       def start_command(port, process_name, num)
-        "/bin/sh -c 'PORT=#{port} PID_FILE=#{pid_file_for(process_name, num)} LOG_FILE=#{log_file_for(process_name, num)} #{wrapper_path_for(process_name)} start'"
+        "#{@shell} -c 'PORT=#{port} PID_FILE=#{pid_file_for(process_name, num)} LOG_FILE=#{log_file_for(process_name, num)} #{wrapper_path_for(process_name)} start'"
       end
 
       def stop_command(process_name, num)
-        "/bin/sh -c 'PID_FILE=#{pid_file_for(process_name, num)} #{wrapper_path_for(process_name)} stop'"
+        "#{@shell} -c 'PID_FILE=#{pid_file_for(process_name, num)} #{wrapper_path_for(process_name)} stop'"
       end
     end
   end
