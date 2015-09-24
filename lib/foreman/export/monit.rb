@@ -69,6 +69,10 @@ module Foreman
         @env_options.split(",").map{|option| option.split(":")[0].strip.upcase + "=" + option.split(":").map(&:strip)[1..-1].join(":") }.join(" ") if @env_options
       end
 
+      def process_identifier(process_name, num)
+        "#{app}-#{process_name}-#{num}"
+      end
+
       def start_command(port, process_name, num)
         "#{@shell} -c 'PORT=#{port} PID_FILE=#{pid_file_for(process_name, num)} LOG_FILE=#{log_file_for(process_name, num)} #{wrapper_path_for(process_name)} start'"
       end

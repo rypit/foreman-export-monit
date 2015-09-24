@@ -4,7 +4,7 @@ function start() {
 <% engine.each_process do |name, process| -%>
 <% 1.upto(engine.formation[name]) do |num| -%>
 <% port = engine.port_for(process, num) -%>
-    sudo monit start <%= name %>-<%= num %>
+    sudo monit start <%= process_identifier(name, num) %>
 <% end -%>
 <% end -%>
 }
@@ -12,7 +12,7 @@ function start() {
 function stop() {
 <% engine.each_process do |name, process| -%>
 <% 1.upto(engine.formation[name]) do |num| -%>
-    sudo monit stop <%= name %>-<%= num %>
+    sudo monit stop <%= process_identifier(name, num) %>
 <% end -%>
 <% end -%>
 }
@@ -21,7 +21,7 @@ function restart() {
 <% engine.each_process do |name, process| -%>
 <% 1.upto(engine.formation[name]) do |num| -%>
 <% port = engine.port_for(process, num) -%>
-    sudo monit restart <%= name %>-<%= num %>
+    sudo monit restart <%= process_identifier(name, num) %>
 <% end -%>
 <% end -%>
 }
