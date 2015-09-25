@@ -66,7 +66,11 @@ module Foreman
       end
 
       def expanded_options
-        @env_options.split(",").map{|option| option.split(":")[0].strip.upcase + "=" + option.split(":").map(&:strip)[1..-1].join(":") }.join(" ")
+        @env_options.split(",").map{|option| option.split(":")[0].strip.upcase + "=" + option.split(":").map(&:strip)[1..-1].join(":") }.join(" ") if @env_options
+      end
+
+      def process_identifier(process_name, num)
+        "#{app}-#{process_name}-#{num}"
       end
 
       def start_command(port, process_name, num)
