@@ -1,4 +1,4 @@
-This gem shoild en consodered deprecated. Consoder using a better supported process manager such as systemd.
+This gem should be considered deprecated. Consider using a better supported process manager such as systemd.
 
 * Introduction
 This is an export for [[https://github.com/ddollar/foreman/][foreman]]. It creates monit config and wrappers for the commands so
